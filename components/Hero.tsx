@@ -1,38 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
-const industries = [
+// ── Framework demo data ────────────────────────────────────────────────────────
+const frameworks = [
   {
-    label: "Hospital / Healthcare",
-    sub: "HIPAA FOCUS",
+    label: "ISO 27001",
+    sub: "INFOSEC",
     icon: (color: string) => (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-        <polyline points="9 22 9 12 15 12 15 22" />
-        <line x1="12" y1="8" x2="12" y2="12" />
-        <line x1="10" y1="10" x2="14" y2="10" />
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
       </svg>
     ),
   },
   {
-    label: "Bank / Financial",
-    sub: "PCI + SWIFT",
-    icon: (color: string) => (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="3" y1="22" x2="21" y2="22" />
-        <line x1="6" y1="18" x2="6" y2="11" />
-        <line x1="10" y1="18" x2="10" y2="11" />
-        <line x1="14" y1="18" x2="14" y2="11" />
-        <line x1="18" y1="18" x2="18" y2="11" />
-        <polygon points="12 2 20 7 4 7" />
-      </svg>
-    ),
-  },
-  {
-    label: "Fintech / Payments",
-    sub: "PCI + SOC 2",
+    label: "PCI-DSS",
+    sub: "PAYMENTS",
     icon: (color: string) => (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
         <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
@@ -41,20 +25,95 @@ const industries = [
     ),
   },
   {
-    label: "SaaS / Enterprise",
-    sub: "SOC 2 + ISO",
+    label: "SOC 2",
+    sub: "TRUST",
     icon: (color: string) => (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-        <line x1="8" y1="21" x2="16" y2="21" />
-        <line x1="12" y1="17" x2="12" y2="21" />
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+        <polyline points="22 4 12 14.01 9 11.01" />
+      </svg>
+    ),
+  },
+  {
+    label: "Custom Framework",
+    sub: "CUSTOM",
+    icon: (color: string) => (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="8" cy="6" r="2" />
+        <line x1="2" y1="6" x2="6" y2="6" />
+        <line x1="10" y1="6" x2="22" y2="6" />
+        <circle cx="16" cy="12" r="2" />
+        <line x1="2" y1="12" x2="14" y2="12" />
+        <line x1="18" y1="12" x2="22" y2="12" />
+        <circle cx="10" cy="18" r="2" />
+        <line x1="2" y1="18" x2="8" y2="18" />
+        <line x1="12" y1="18" x2="22" y2="18" />
       </svg>
     ),
   },
 ];
 
+const AUTO_INTERVAL = 2500; // ms between auto-advances
+const RESUME_DELAY  = 5000; // ms of inactivity before resuming
+
 export default function Hero() {
-  const [selected, setSelected] = useState<number | null>(null);
+  const [selected, setSelected]           = useState(0);
+  const [linesVisible, setLinesVisible]   = useState(false);
+  const isPausedRef    = useRef(false);
+  const intervalRef    = useRef<ReturnType<typeof setInterval> | null>(null);
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reducedRef     = useRef(false);
+
+  // ── Hero text stagger entrance ─────────────────────────────────────────────
+  useEffect(() => {
+    reducedRef.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedRef.current) {
+      setLinesVisible(true);
+      return;
+    }
+    // Double rAF: ensures opacity:0 state is painted before the transition fires
+    let id = requestAnimationFrame(() => {
+      id = requestAnimationFrame(() => setLinesVisible(true));
+    });
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  // ── Framework auto-rotation ────────────────────────────────────────────────
+  useEffect(() => {
+    // Start after a brief delay so it doesn't compete with the text entrance
+    const kickoff = setTimeout(() => {
+      if (reducedRef.current) return;
+      intervalRef.current = setInterval(() => {
+        if (!isPausedRef.current) {
+          setSelected((prev) => (prev + 1) % frameworks.length);
+        }
+      }, AUTO_INTERVAL);
+    }, 1200);
+
+    return () => {
+      clearTimeout(kickoff);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
+  }, []);
+
+  // Manual selection — pauses auto-rotation, resumes after RESUME_DELAY
+  const handleSelect = (i: number) => {
+    setSelected(i);
+    isPausedRef.current = true;
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => {
+      isPausedRef.current = false;
+    }, RESUME_DELAY);
+  };
+
+  // Returns stagger-aware transition style for each hero headline line
+  const lineStyle = (delayMs: number): React.CSSProperties => ({
+    display: "block",
+    opacity:   linesVisible ? 1 : 0,
+    transform: linesVisible ? "translateY(0px)" : "translateY(24px)",
+    transition: `opacity 700ms cubic-bezier(0.22,1,0.36,1) ${delayMs}ms, transform 700ms cubic-bezier(0.22,1,0.36,1) ${delayMs}ms`,
+  });
 
   return (
     <section className="relative overflow-hidden hero-pad" style={{ background: "#f8fafd" }}>
@@ -64,7 +123,7 @@ export default function Hero() {
           {/* ── LEFT: Copy ── */}
           <div style={{ maxWidth: "590px" }}>
 
-            {/* Badge pill — live-indicator style, matches ON TRACK pill */}
+            {/* Badge pill — live-indicator */}
             <div
               className="inline-flex items-center gap-2 font-mono font-bold uppercase tracking-widest mb-5"
               style={{
@@ -75,7 +134,6 @@ export default function Hero() {
                 fontSize: "10px",
               }}
             >
-              {/* Pulsing "online" dot — solid centre + ping ripple behind it */}
               <span className="relative inline-flex flex-shrink-0" style={{ width: "8px", height: "8px" }}>
                 <span
                   className="animate-ping absolute inline-flex rounded-full"
@@ -89,14 +147,13 @@ export default function Hero() {
               Security First · Enterprise · Institutional
             </div>
 
-            {/* Headline — responsive via CSS class */}
+            {/* Headline — three lines, staggered entrance */}
             <h1 className="hero-h1">
-              Compliance
-              <br />
-              at{" "}
-              <span style={{ color: "#0d6ee6" }}>Institutional</span>
-              <br />
-              Scale.
+              <span style={lineStyle(0)}>Compliance</span>
+              <span style={lineStyle(150)}>
+                at{" "}<span style={{ color: "#0d6ee6" }}>Institutional</span>
+              </span>
+              <span style={lineStyle(300)}>Scale.</span>
             </h1>
 
             {/* Description */}
@@ -164,7 +221,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* ── RIGHT: Step 1 card ── */}
+          {/* ── RIGHT: Framework selection demo ── */}
           <div className="w-full lg:max-w-[540px] lg:justify-self-end">
             <div
               className="bg-white flex flex-col w-full"
@@ -175,66 +232,65 @@ export default function Hero() {
                 gap: "16px",
               }}
             >
-              {/* Header row */}
+              {/* Card header */}
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <span style={{ fontSize: "15px", fontWeight: 700, color: "#0c1723" }}>
-                  Step 1 — Identify Organization
+                  Select Compliance Framework
                 </span>
                 <span
                   className="font-mono uppercase tracking-widest"
                   style={{ fontSize: "11px", color: "#616a75" }}
                 >
-                  SYSTEM_INIT_V2.0
+                  FRAMEWORK_SELECT
                 </span>
               </div>
 
-              {/* 2×2 industry grid */}
+              {/* 2×2 framework grid */}
               <div className="grid grid-cols-2" style={{ gap: "8px" }}>
-                {industries.map((ind, i) => {
-                  const isSelected = selected === i;
+                {frameworks.map((fw, i) => {
+                  const isActive = selected === i;
                   return (
                     <button
-                      key={ind.label}
-                      onClick={() => setSelected(i)}
+                      key={fw.label}
+                      onClick={() => handleSelect(i)}
                       className="flex items-start text-left"
                       style={{
                         gap: "10px",
                         borderRadius: "12px",
                         padding: "14px",
-                        border: isSelected
+                        border: isActive
                           ? "1.5px solid #0d6ee6"
                           : "0.67px solid rgba(12,23,35,0.12)",
-                        background: isSelected ? "#f0f6ff" : "transparent",
-                        boxShadow: isSelected
-                          ? "0 0 0 3px rgba(13,110,230,0.1)"
+                        background: isActive ? "#f0f6ff" : "transparent",
+                        boxShadow: isActive
+                          ? "0 0 0 3px rgba(13,110,230,0.08)"
                           : "none",
                         cursor: "pointer",
-                        transition: "border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease",
+                        transition: "border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease",
                       }}
                     >
-                      {/* Icon box */}
+                      {/* Icon container */}
                       <div
                         className="flex items-center justify-center flex-shrink-0"
                         style={{
                           width: "36px",
                           height: "36px",
                           borderRadius: "8px",
-                          background: isSelected ? "#ddeafe" : "#edf2f8",
+                          background: isActive ? "#ddeafe" : "#edf2f8",
+                          transition: "background 0.25s ease",
                         }}
                       >
-                        {ind.icon(isSelected ? "#0d6ee6" : "#616a75")}
+                        {fw.icon(isActive ? "#0d6ee6" : "#616a75")}
                       </div>
                       <div className="flex flex-col gap-0.5 min-w-0">
-                        <span
-                          style={{ fontSize: "13px", fontWeight: 700, color: "#0c1723", lineHeight: "1.3" }}
-                        >
-                          {ind.label}
+                        <span style={{ fontSize: "13px", fontWeight: 700, color: "#0c1723", lineHeight: "1.3" }}>
+                          {fw.label}
                         </span>
                         <span
                           className="font-mono uppercase tracking-widest"
                           style={{ fontSize: "9px", color: "#0d6ee6" }}
                         >
-                          {ind.sub}
+                          {fw.sub}
                         </span>
                       </div>
                     </button>
@@ -242,7 +298,7 @@ export default function Hero() {
                 })}
               </div>
 
-              {/* Continue button */}
+              {/* Continue CTA */}
               <button
                 className="w-full flex items-center justify-center font-bold text-white transition-all duration-150 hover:opacity-90 active:scale-[0.99]"
                 style={{
@@ -250,16 +306,11 @@ export default function Hero() {
                   borderRadius: "10px",
                   height: "44px",
                   fontSize: "14px",
-                  opacity: selected !== null ? 1 : 0.5,
                   gap: "6px",
                 }}
               >
                 Continue
-                <span style={{
-                  display: "inline-block",
-                  transition: "transform 0.2s ease",
-                  transform: selected !== null ? "translateX(0)" : "none",
-                }}>→</span>
+                <span style={{ display: "inline-block" }}>→</span>
               </button>
 
               {/* Caption */}
@@ -267,7 +318,7 @@ export default function Hero() {
                 className="text-center font-mono uppercase tracking-widest"
                 style={{ fontSize: "9px", color: "#616a75" }}
               >
-                ~ 90 SECONDS TO YOUR FIRST COMPLIANCE ROADMAP
+                ~ GET COMPLIANT IN UNDER 30 SECONDS
               </p>
             </div>
           </div>
