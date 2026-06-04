@@ -54,7 +54,8 @@ const frameworks = [
 ];
 
 export default function Hero() {
-  const [selected, setSelected]           = useState(0);
+  // Multi-select: Set of active framework indices
+  const [selected, setSelected] = useState<Set<number>>(new Set([0]));
   const [linesVisible, setLinesVisible]   = useState(false);
   const reducedRef = useRef(false);
 
@@ -72,7 +73,18 @@ export default function Hero() {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  const handleSelect = (i: number) => setSelected(i);
+  // Toggle selection — click again to deselect
+  const handleSelect = (i: number) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) {
+        next.delete(i);
+      } else {
+        next.add(i);
+      }
+      return next;
+    });
+  };
 
   // Returns stagger-aware transition style for each hero headline line
   const lineStyle = (delayMs: number): React.CSSProperties => ({
@@ -142,7 +154,7 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3" style={{ marginTop: "28px" }}>
               <Link
                 href="#cta"
-                className="btn-cta-primary inline-flex items-center justify-center gap-2 text-white font-bold"
+                className="group btn-cta-primary inline-flex items-center justify-center gap-2 text-white font-bold"
                 style={{
                   background: "#0d6ee6",
                   borderRadius: "10px",
@@ -152,7 +164,10 @@ export default function Hero() {
                   boxShadow: "0px 10px 30px -12px rgba(13,110,230,0.22)",
                 }}
               >
-                Create company profile&nbsp;<span className="cta-arrow">→</span>
+                Create company profile
+                <span className="inline-block transition-transform duration-200 ease-out group-hover:translate-x-[5px]">
+                  →
+                </span>
               </Link>
               <Link
                 href="#frameworks"
@@ -215,7 +230,7 @@ export default function Hero() {
               {/* 2×2 framework grid */}
               <div className="grid grid-cols-2" style={{ gap: "8px" }}>
                 {frameworks.map((fw, i) => {
-                  const isActive = selected === i;
+                  const isActive = selected.has(i);
                   return (
                     <button
                       key={fw.label}
@@ -267,17 +282,21 @@ export default function Hero() {
 
               {/* Continue CTA */}
               <button
-                className="w-full flex items-center justify-center font-bold text-white transition-all duration-150 hover:opacity-90 active:scale-[0.99]"
+                className="group w-full flex items-center justify-center font-bold text-white active:scale-[0.99]"
                 style={{
                   background: "#0c1723",
                   borderRadius: "10px",
                   height: "44px",
                   fontSize: "14px",
                   gap: "6px",
+                  opacity: selected.size > 0 ? 1 : 0.45,
+                  transition: "opacity 0.2s ease, transform 0.1s ease",
                 }}
               >
                 Continue
-                <span style={{ display: "inline-block" }}>→</span>
+                <span className="inline-block transition-transform duration-200 ease-out group-hover:translate-x-[5px]">
+                  →
+                </span>
               </button>
 
               {/* Caption */}
