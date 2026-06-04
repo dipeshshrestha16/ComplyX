@@ -53,16 +53,10 @@ const frameworks = [
   },
 ];
 
-const AUTO_INTERVAL = 2500; // ms between auto-advances
-const RESUME_DELAY  = 5000; // ms of inactivity before resuming
-
 export default function Hero() {
   const [selected, setSelected]           = useState(0);
   const [linesVisible, setLinesVisible]   = useState(false);
-  const isPausedRef    = useRef(false);
-  const intervalRef    = useRef<ReturnType<typeof setInterval> | null>(null);
-  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const reducedRef     = useRef(false);
+  const reducedRef = useRef(false);
 
   // ── Hero text stagger entrance ─────────────────────────────────────────────
   useEffect(() => {
@@ -78,34 +72,7 @@ export default function Hero() {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // ── Framework auto-rotation ────────────────────────────────────────────────
-  useEffect(() => {
-    // Start after a brief delay so it doesn't compete with the text entrance
-    const kickoff = setTimeout(() => {
-      if (reducedRef.current) return;
-      intervalRef.current = setInterval(() => {
-        if (!isPausedRef.current) {
-          setSelected((prev) => (prev + 1) % frameworks.length);
-        }
-      }, AUTO_INTERVAL);
-    }, 1200);
-
-    return () => {
-      clearTimeout(kickoff);
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
-    };
-  }, []);
-
-  // Manual selection — pauses auto-rotation, resumes after RESUME_DELAY
-  const handleSelect = (i: number) => {
-    setSelected(i);
-    isPausedRef.current = true;
-    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
-    resumeTimerRef.current = setTimeout(() => {
-      isPausedRef.current = false;
-    }, RESUME_DELAY);
-  };
+  const handleSelect = (i: number) => setSelected(i);
 
   // Returns stagger-aware transition style for each hero headline line
   const lineStyle = (delayMs: number): React.CSSProperties => ({

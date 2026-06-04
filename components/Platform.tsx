@@ -297,23 +297,26 @@ export default function Platform() {
           <div className="feature-grid">
             {features.map((feature) => (
               <div key={feature.title} className="feature-cell">
-                <div
-                  className="flex items-center justify-center flex-shrink-0"
-                  style={{
-                    width: "44px",
-                    height: "44px",
-                    borderRadius: "10px",
-                    background: "rgba(13,110,230,0.05)",
-                    border: "0.67px solid rgba(13,110,230,0.1)",
-                    marginBottom: "20px",
-                  }}
-                >
-                  {feature.icon}
+                {/* Icon + title on same row */}
+                <div className="flex items-center gap-3" style={{ marginBottom: "10px" }}>
+                  <div
+                    className="flex items-center justify-center flex-shrink-0"
+                    style={{
+                      width: "38px",
+                      height: "38px",
+                      borderRadius: "10px",
+                      background: "rgba(13,110,230,0.05)",
+                      border: "0.67px solid rgba(13,110,230,0.1)",
+                    }}
+                  >
+                    {feature.icon}
+                  </div>
+                  <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#0c1723", lineHeight: "1.3" }}>
+                    {feature.title}
+                  </h3>
                 </div>
-                <h3 style={{ fontSize: "17px", fontWeight: 700, color: "#0c1723", lineHeight: "1.3" }}>
-                  {feature.title}
-                </h3>
-                <p style={{ fontSize: "14px", color: "#616a75", lineHeight: "22px", marginTop: "8px" }}>
+                {/* Description below */}
+                <p style={{ fontSize: "14px", color: "#616a75", lineHeight: "22px" }}>
                   {feature.description}
                 </p>
               </div>

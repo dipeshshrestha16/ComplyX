@@ -5,7 +5,7 @@ const steps = [
     description:
       "Tell us about your organization — sector, geography, headcount, and infrastructure. ComplyX tailors the model accordingly.",
     icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0d6ee6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0d6ee6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
         <circle cx="12" cy="7" r="4" />
       </svg>
@@ -17,7 +17,7 @@ const steps = [
     description:
       "Select one or more frameworks. We cross-map shared controls so SOC 2 + ISO 27001 isn't twice the work.",
     icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0d6ee6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0d6ee6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="9 11 12 14 22 4" />
         <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
       </svg>
@@ -29,7 +29,7 @@ const steps = [
     description:
       "Connect cloud, IdP, HR, and ticketing. Continuous evidence flows into auditor-ready dossiers.",
     icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0d6ee6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0d6ee6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
         <polyline points="13 2 13 9 20 9" />
       </svg>
@@ -82,26 +82,20 @@ export default function Workflow() {
               key={step.num}
               className="flex flex-col feature-cell"
             >
-              {/* Step number badge */}
-              <div
-                className="flex items-center justify-center flex-shrink-0"
-                style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "10px",
-                  background: "rgba(13,110,230,0.05)",
-                  border: "0.67px solid rgba(13,110,230,0.15)",
-                  marginBottom: "20px",
-                }}
-              >
-                <span className="font-mono font-bold" style={{ fontSize: "12px", color: "#0d6ee6" }}>
-                  {step.num}
-                </span>
-              </div>
-
-              {/* Icon + title */}
-              <div className="flex items-start gap-2.5" style={{ marginBottom: "8px" }}>
-                <div className="flex-shrink-0 mt-0.5">{step.icon}</div>
+                  {/* Icon + title inline — no step-number box */}
+              <div className="flex items-center gap-2.5" style={{ marginBottom: "10px" }}>
+                <div
+                  className="flex items-center justify-center flex-shrink-0"
+                  style={{
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "8px",
+                    background: "rgba(13,110,230,0.05)",
+                    border: "0.67px solid rgba(13,110,230,0.15)",
+                  }}
+                >
+                  {step.icon}
+                </div>
                 <h3 style={{ fontSize: "17px", fontWeight: 700, color: "#0c1723", lineHeight: "1.3" }}>
                   {step.title}
                 </h3>
