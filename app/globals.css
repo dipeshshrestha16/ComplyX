@@ -158,11 +158,13 @@ body {
   }
 }
 
-/* Feature cell — smaller padding on mobile */
+/* Feature cell — smaller padding on mobile; vertically centered so content
+   doesn't float to the top when cells stretch to fill grid height           */
 .feature-cell {
   background: #f8fafd;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   padding: 24px;
 }
 @media (min-width: 768px) {
