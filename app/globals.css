@@ -1,0 +1,255 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #0d6ee6;
+  --primary-dark: #0b62d4;
+  --background: #f8fafd;
+  --surface: #ffffff;
+  --fg-dark: #0c1723;
+  --muted: #616a75;
+  --muted-bg: #edf2f8;
+  --success: #3bb360;
+  --info-blue: #259cde;
+  --border: rgba(12, 23, 35, 0.12);
+  --border-subtle: rgba(12, 23, 35, 0.05);
+  --primary-5: rgba(13, 110, 230, 0.05);
+  --primary-10: rgba(13, 110, 230, 0.1);
+  --primary-15: rgba(13, 110, 230, 0.15);
+  --primary-22: rgba(13, 110, 230, 0.22);
+  --shadow-card: 0px 1px 2px rgba(12,23,35,0.04), 0px 8px 24px -8px rgba(12,23,35,0.08);
+  --shadow-blue-glow: 0px 10px 30px -12px rgba(13,110,230,0.22);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--fg-dark);
+  background: var(--background);
+}
+
+@layer components {
+  .section-label {
+    @apply text-[10px] font-bold tracking-[0.08em] uppercase;
+    color: var(--primary);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-primary text-white font-bold rounded-[10px]
+           transition-all duration-150 hover:bg-primary-dark active:scale-[0.98];
+    box-shadow: var(--shadow-blue-glow);
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 bg-white font-bold rounded-[10px]
+           transition-all duration-150 hover:bg-[#f0f4fa] active:scale-[0.98];
+    color: var(--fg-dark);
+    border: 0.67px solid var(--border);
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 bg-transparent font-semibold rounded-md
+           transition-all duration-150 hover:bg-black/[0.04];
+    color: var(--fg-dark);
+  }
+
+  .card {
+    @apply bg-white rounded-lg p-5;
+    border: 0.67px solid var(--border);
+    box-shadow: var(--shadow-card);
+  }
+
+  .container-page {
+    @apply max-w-[1280px] mx-auto px-4 sm:px-6;
+  }
+
+  /* Framework card hover */
+  .fw-card {
+    transition: box-shadow 0.15s ease;
+  }
+  .fw-card:hover {
+    box-shadow: 0px 1px 2px rgba(12,23,35,0.04), 0px 8px 24px -8px rgba(12,23,35,0.08);
+  }
+
+  /* CTA arrow slide */
+  .btn-cta-primary { transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease; }
+  .btn-cta-primary:hover { background: #2b7ff0 !important; box-shadow: 0px 14px 36px -12px rgba(13,110,230,0.38) !important; }
+  .btn-cta-primary:active { transform: scale(0.98); }
+
+  .btn-cta-outline { transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease; }
+  .btn-cta-outline:hover { background: #e8eef7 !important; border-color: rgba(12,23,35,0.22) !important; }
+  .btn-cta-outline:active { transform: scale(0.98); }
+
+  .footer-link { transition: color 0.15s ease; }
+  .footer-link:hover { color: #0c1723 !important; }
+}
+
+/* ─────────────────────────────────────
+   RESPONSIVE GRID LAYOUTS
+   (inline style overrides → CSS classes)
+───────────────────────────────────── */
+
+/* Hero 2-col grid */
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1fr 540px;
+    gap: 56px;
+  }
+}
+
+/* Platform 2-col grid */
+.platform-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .platform-grid {
+    grid-template-columns: 1fr 2fr;
+    gap: 64px;
+    align-items: stretch;
+  }
+}
+
+/* Feature grid (2×2) — 1-col mobile → 2-col sm+ */
+.feature-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: rgba(12,23,35,0.12);
+  border: 0.67px solid rgba(12,23,35,0.12);
+  border-radius: 18px;
+  overflow: hidden;
+  height: auto;
+}
+@media (min-width: 640px) {
+  .feature-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (min-width: 1024px) {
+  .feature-grid {
+    height: 100%;
+    align-self: stretch;
+  }
+}
+
+/* Feature cell — smaller padding on mobile */
+.feature-cell {
+  background: #f8fafd;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+}
+@media (min-width: 768px) {
+  .feature-cell { padding: 32px; }
+}
+@media (min-width: 1024px) {
+  .feature-cell { padding: 40px; }
+}
+
+/* Section vertical padding — tighter on mobile */
+.section-pad {
+  padding-top: 64px;
+  padding-bottom: 64px;
+}
+@media (min-width: 768px) {
+  .section-pad {
+    padding-top: 96px;
+    padding-bottom: 96px;
+  }
+}
+
+/* Hero section padding */
+.hero-pad {
+  padding-top: 52px;
+  padding-bottom: 64px;
+}
+@media (min-width: 768px) {
+  .hero-pad {
+    padding-top: 80px;
+    padding-bottom: 96px;
+  }
+}
+
+/* Hero H1 responsive size */
+.hero-h1 {
+  font-weight: 800;
+  line-height: 0.97;
+  letter-spacing: -1.2px;
+  color: #0c1723;
+  font-size: 40px;
+}
+@media (min-width: 640px) {
+  .hero-h1 { font-size: 56px; letter-spacing: -1.5px; }
+}
+@media (min-width: 1024px) {
+  .hero-h1 { font-size: 72px; line-height: 68px; letter-spacing: -1.8px; }
+}
+
+/* CTA heading responsive */
+.cta-h2 {
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  color: #ffffff;
+  line-height: 1.1;
+  font-size: 28px;
+}
+@media (min-width: 640px) {
+  .cta-h2 { font-size: 38px; letter-spacing: -1px; }
+}
+@media (min-width: 1024px) {
+  .cta-h2 { font-size: 48px; line-height: 1.05; }
+}
+
+/* ─────────────────────────────────────
+   ANIMATIONS
+───────────────────────────────────── */
+
+/* ── Dashboard card: fade-up entrance (fires once via IntersectionObserver) ── */
+.card-pre-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes card-fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0px); }
+}
+
+.card-fade-enter {
+  animation: card-fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ── Dashboard card: gentle float (starts after fade-up, on inner wrapper) ── */
+@keyframes float-card {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+.card-float-enter {
+  animation: float-card 4s ease-in-out 0.8s infinite;
+  will-change: transform;
+}
